@@ -6,16 +6,22 @@ new Vue({
             name : '',
             firstChar : ''
         },
+        searchBrands :{
+            name : '',
+            firstChar : ''
+        },
+        isFlash : false,//防止没id时点击删除也发送请求
         page : 1,
         pageSize : 10,
         total : 150,
-        maxPage : 9
+        maxPage : 9,
+        selectIds : []
     },
     methods : {
           pageHandler : function (page) {
               var _this = this;
               _this.page = page;
-              axios.get('/brand/findPage.do', {params:{page : page, rows : this.pageSize}})
+              axios.post('/brand/findPage.do?page='+this.page+"&rows=10" ,_this.searchBrands)
                   .then(function (response) {
                       _this.brandList = response.data.rows;
                       _this.total = response.data.total;
@@ -29,11 +35,11 @@ new Vue({
                   axios.post('/brand/add.do', _this.brand)
                       .then(function (response) {
                           if (response.data.success){
-                              alert(response.data.message);
+                              console.log(response.data.message);
                               _this.pageHandler(_this.page);
                               _this.brand = {};
                           }else {
-                              alert(response.data.message);
+                              console.log(response.data.message);
                           }
                       }).catch(function (reason) {
                       console.log(reason);
@@ -57,6 +63,35 @@ new Vue({
                   }).catch(function (reason) {
                       console.log(reason);
               })
+          },
+          deleteSelection : function (event, id) {
+              if (event.target.checked){
+                  this.selectIds.push(id);
+              }else {
+                  var ids = this.selectIds.indexOf(id);
+                  /**
+                   *  splice(index,howmany,item1,.....,itemX)
+                   *  第一个参数index是数组元素位置，第二个元素
+                   *  是删除几个，后面可选
+                   */
+                  this.selectIds.splice(ids, 1);
+              }
+              this.isFlash = true;
+          },
+          deleteBrand : function () {
+              console.log(this.selectIds);
+              var _this = this;
+              if (_this.isFlash === true) {
+                  axios.post('/brand/delete.do', Qs.stringify({ids : _this.selectIds}, {indices : false}))
+                      .then(function () {
+                          _this.pageHandler(1);
+                          _this.selectIds = [];
+                          window.location.reload();
+                          _this.isFlash = false;
+                      }).catch(function (reason) {
+                      console.log(reason.message);
+                  })
+              }
           }
     },
     created : function () {

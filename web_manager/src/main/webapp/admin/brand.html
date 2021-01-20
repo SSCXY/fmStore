@@ -28,10 +28,20 @@
 				<div class="form-group form-inline">
 					<div class="btn-group">
 						<button type="button" class="btn btn-default" title="新建" data-toggle="modal" data-target="#editModal" ><i class="fa fa-file-o"></i> 新建</button>
-						<button type="button" class="btn btn-default" title="删除" ><i class="fa fa-trash-o"></i> 删除</button>
+						<button type="button" class="btn btn-default" title="删除" @click="deleteBrand()"><i class="fa fa-trash-o"></i> 删除</button>
 						<button type="button" class="btn btn-default" title="刷新" onclick="window.location.reload();"><i class="fa fa-refresh"></i> 刷新</button>
 					</div>
+
+					<div class="box-tools pull-right">
+						<div class="has-feedback" style="margin-left: 750px; font-size: 16px">
+							品牌名称: <input type="text" class="form-control" v-model="searchBrands.name" >
+							品牌首字母: <input type="text" class="form-control" v-model="searchBrands.firstChar">
+							<input class="btn btn-default" type="button" @click="pageHandler(1)" value="查询">
+						</div>
+					</div>
 				</div>
+
+
 			</div>
 			<div class="box-tools pull-right">
 				<div class="has-feedback"></div>
@@ -51,7 +61,7 @@
 				</thead>
 				<tbody>
 				<tr v-for="brandItem in brandList">
-					<td><input  type="checkbox" ></td>
+					<td><input  type="checkbox" @click="deleteSelection($event, brandItem.id)" ></td>
 					<td>{{brandItem.id}}</td>
 					<td>{{brandItem.name}}</td>
 					<td>{{brandItem.firstChar}}</td>

@@ -25,8 +25,8 @@ public class BrandController {
     }
 
     @RequestMapping("/findPage")
-    public PageResult finPage(Integer page, Integer rows){
-        return brandService.findPage(page, rows);
+    public PageResult findPage(Integer page, Integer rows, @RequestBody Brand searchBrands){
+        return brandService.findPage(page, rows, searchBrands);
     }
 
     @RequestMapping("/add")
@@ -47,7 +47,7 @@ public class BrandController {
 
     @RequestMapping("/update")
     private Result update(@RequestBody Brand brand){
-        System.out.println(brand);
+
         try {
 
             brandService.update(brand);
@@ -58,5 +58,14 @@ public class BrandController {
         }
     }
 
-
+    @RequestMapping("/delete")
+    private Result delete(Long[] ids){
+        try {
+            brandService.delete(ids);
+            return new Result(true,"删除成功！");
+        }catch (Exception e){
+            e.printStackTrace();
+            return new Result(false,"删除失败");
+        }
+    }
 }
